@@ -1,0 +1,26 @@
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY ["API/API.csproj", "API/"]
+COPY ["Repositories/Repositories.csproj", "Repositories/"]
+COPY ["Services/Services.csproj", "Services/"]
+
+# Restaurer les packages NuGet
+RUN dotnet restore "API/API.csproj"
+
+# Copier le reste des fichiers sources
+COPY . .
+
+WORKDIR "/src/API"
+RUN dotnet build "API.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish . 
+ENTRYPOINT ["dotnet", "API.dll"]

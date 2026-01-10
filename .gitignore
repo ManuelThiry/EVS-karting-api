@@ -1,0 +1,49 @@
+## Build results
+bin/
+obj/
+out/
+dist/
+Debug/
+Release/
+
+## Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## OS generated files
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log
+logs/
+
+## Rider / Resharper
+.idea/
+*.DotSettings.user
+_ReSharper*/
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+## ASP.NET Core settings
+appsettings.Development.json
+appsettings.*.local.json
+
+## Secrets / Environment
+secrets.json
+.env
+.env.*
+
+## Others
+*.swp
+*.bak
+*.tmp
+*.pid
