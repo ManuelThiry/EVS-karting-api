@@ -20,6 +20,130 @@ namespace Repositories.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
 
+            modelBuilder.Entity("Repositories.Models.DriverModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Team")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Drivers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Manuel THIRY",
+                            Team = "A7 Core"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Maxime BECKERS",
+                            Team = "A7 Core"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Simon MAUDOUX",
+                            Team = "A7 Core"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Pierre MIGNOLET",
+                            Team = "PGT"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Thibaut MARECHAL",
+                            Team = "Enrich"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Aubry HUYGHEBAERT",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Jeremy MAHIAT",
+                            Team = "PGT"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Pierre JACOBS",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Quentin BOILEAU",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Loic PETERS",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Florian GIARUSSO",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "Mathieu WYZEN",
+                            Team = "Enrich"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "Raphael MONTESANTI",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Quentin VAN EYLEN",
+                            Team = "PGT"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Cyril HARDY",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "Nicolas PREUD'HOMME",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "Arnaud SCHAAL",
+                            Team = "A7 Core"
+                        });
+                });
+
             modelBuilder.Entity("Repositories.Models.RaceModel", b =>
                 {
                     b.Property<int>("Id")
@@ -65,10 +189,10 @@ namespace Repositories.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 2,
+                            Id = 1,
                             Contact = "Manuel Thiry (MATH)",
-                            Date = new DateTime(2026, 1, 15, 20, 0, 0, 585, DateTimeKind.Unspecified),
-                            Drivers = "Manuel THIRY, Maxime BECKERS, Simon MAUDOUX, Pierre MIGNOLET, Thibaut MARECHAL, Aubry HUYGHEBAERT, Jeremy MAHIAT, Pierre JACOBS, Quentin BOILEAU, Loic PETERS",
+                            Date = new DateTime(2026, 1, 15, 20, 0, 0, 585, DateTimeKind.Utc),
+                            Drivers = "Manuel THIRY, Maxime BECKERS, Simon MAUDOUX, Pierre MIGNOLET, Thibaut MARECHAL, Aubry HUYGHEBAERT, Jeremy MAHIAT, Pierre JACOBS, Quentin BOILEAU, Loic PETERS, Florian GIARUSSO, Mathieu WYZEN, Raphael MONTESANTI, Quentin VAN EYLEN, Cyril HARDY, Nicolas PREUD'HOMME, Arnaud SCHAAL",
                             Period = "January",
                             Price = 56,
                             RaceFormat = "Q: 6min, R: 30min",
@@ -77,7 +201,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 2,
                             Contact = "",
                             Drivers = "",
                             Period = "March",
@@ -88,7 +212,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 3,
                             Contact = "",
                             Drivers = "",
                             Period = "May",
@@ -99,7 +223,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 4,
                             Contact = "",
                             Drivers = "",
                             Period = "July",
@@ -110,7 +234,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 5,
                             Contact = "",
                             Drivers = "",
                             Period = "September",
@@ -121,7 +245,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 6,
                             Contact = "",
                             Drivers = "",
                             Period = "November",

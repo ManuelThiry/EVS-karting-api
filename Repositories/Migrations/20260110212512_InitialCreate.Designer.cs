@@ -11,7 +11,7 @@ using Repositories;
 namespace Repositories.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260108221746_InitialCreate")]
+    [Migration("20260110212512_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -22,6 +22,130 @@ namespace Repositories.Migrations
                 .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+
+            modelBuilder.Entity("Repositories.Models.DriverModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Team")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Drivers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Manuel THIRY",
+                            Team = "A7 Core"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Maxime BECKERS",
+                            Team = "A7 Core"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Simon MAUDOUX",
+                            Team = "A7 Core"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Pierre MIGNOLET",
+                            Team = "PGT"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Thibaut MARECHAL",
+                            Team = "Enrich"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Aubry HUYGHEBAERT",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Jeremy MAHIAT",
+                            Team = "PGT"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Pierre JACOBS",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Quentin BOILEAU",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Loic PETERS",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Florian GIARUSSO",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "Mathieu WYZEN",
+                            Team = "Enrich"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "Raphael MONTESANTI",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Quentin VAN EYLEN",
+                            Team = "PGT"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Cyril HARDY",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "Nicolas PREUD'HOMME",
+                            Team = ""
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "Arnaud SCHAAL",
+                            Team = "A7 Core"
+                        });
+                });
 
             modelBuilder.Entity("Repositories.Models.RaceModel", b =>
                 {
@@ -68,13 +192,24 @@ namespace Repositories.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 2,
+                            Id = 1,
                             Contact = "Manuel Thiry (MATH)",
-                            Date = new DateTime(2026, 1, 15, 20, 0, 0, 585, DateTimeKind.Unspecified),
-                            Drivers = "Manuel THIRY, Maxime BECKERS, Simon MAUDOUX, Pierre MIGNOLET, Thibaut MARECHAL, Aubry HUYGHEBAERT, Jeremy MAHIAT, Pierre JACOBS, Quentin BOILEAU, Loic PETERS",
+                            Date = new DateTime(2026, 1, 15, 20, 0, 0, 585, DateTimeKind.Utc),
+                            Drivers = "Manuel THIRY, Maxime BECKERS, Simon MAUDOUX, Pierre MIGNOLET, Thibaut MARECHAL, Aubry HUYGHEBAERT, Jeremy MAHIAT, Pierre JACOBS, Quentin BOILEAU, Loic PETERS, Florian GIARUSSO, Mathieu WYZEN, Raphael MONTESANTI, Quentin VAN EYLEN, Cyril HARDY, Nicolas PREUD'HOMME, Arnaud SCHAAL",
                             Period = "January",
                             Price = 56,
                             RaceFormat = "Q: 6min, R: 30min",
+                            Results = "",
+                            TrackId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Contact = "",
+                            Drivers = "",
+                            Period = "March",
+                            Price = 0,
+                            RaceFormat = "",
                             Results = "",
                             TrackId = 2
                         },
@@ -83,7 +218,7 @@ namespace Repositories.Migrations
                             Id = 3,
                             Contact = "",
                             Drivers = "",
-                            Period = "March",
+                            Period = "May",
                             Price = 0,
                             RaceFormat = "",
                             Results = "",
@@ -94,7 +229,7 @@ namespace Repositories.Migrations
                             Id = 4,
                             Contact = "",
                             Drivers = "",
-                            Period = "May",
+                            Period = "July",
                             Price = 0,
                             RaceFormat = "",
                             Results = "",
@@ -105,7 +240,7 @@ namespace Repositories.Migrations
                             Id = 5,
                             Contact = "",
                             Drivers = "",
-                            Period = "July",
+                            Period = "September",
                             Price = 0,
                             RaceFormat = "",
                             Results = "",
@@ -116,22 +251,11 @@ namespace Repositories.Migrations
                             Id = 6,
                             Contact = "",
                             Drivers = "",
-                            Period = "September",
-                            Price = 0,
-                            RaceFormat = "",
-                            Results = "",
-                            TrackId = 6
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Contact = "",
-                            Drivers = "",
                             Period = "November",
                             Price = 0,
                             RaceFormat = "",
                             Results = "",
-                            TrackId = 7
+                            TrackId = 6
                         });
                 });
 
@@ -165,7 +289,7 @@ namespace Repositories.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 2,
+                            Id = 1,
                             Image = "https://s3.eu-west-3.amazonaws.com/sport-finder.image/images/cache/full_hd/center/karting-eupen.jpeg",
                             Length = "1.1 km",
                             Location = "Industriestraße 37, 4700 Eupen",
@@ -173,7 +297,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 2,
                             Image = "https://www.liegekarting.com/upload/liege-karting-5b3b97-large.jpg",
                             Length = "530 m",
                             Location = "Rue Eugène Vandenhoff 88, 4030 Liège",
@@ -181,7 +305,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 3,
                             Image = "https://www.francorchamps-karting.be/images/site/2024121814_1734530354e2.jpg",
                             Length = "1.0 km",
                             Location = "Rte de l' Eau Rouge 51, 4970 Stavelot",
@@ -189,7 +313,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 4,
                             Image = "https://www.lavenir.net/resizer/v2/AVCT2F553ZEFJEXQ3SEYOQRKN4.jpg?auth=0b9be8d04b9e73a078e70838860f29bc40f18b1287b72d0af458d09e9fa95987&width=1620&height=1085&quality=85&focal=512%2C343",
                             Length = "1.3 km",
                             Location = "Rue du Karting 13, 5660 Couvin",
@@ -197,7 +321,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 5,
                             Image = "https://i.pinimg.com/564x/90/7c/2f/907c2f8ecc87c1688948ed0dee503761.jpg",
                             Length = "600 m",
                             Location = "Av. Reine Astrid 97/A, 4831 Limbourg",
@@ -205,7 +329,7 @@ namespace Repositories.Migrations
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 6,
                             Image = "",
                             Length = "",
                             Location = "",

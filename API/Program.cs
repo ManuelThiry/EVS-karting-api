@@ -7,11 +7,9 @@ using DotNetEnv;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 
-// Load environment variables from .env
 Env.Load();
 
 
-// Get environment from .env or fallback to ASPNETCORE_ENVIRONMENT
 var environment = Env.GetString("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -20,10 +18,8 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     EnvironmentName = environment
 });
 
-// Ajout CORS
 var allowedOrigin = Env.GetString("ALLOWED_ORIGIN") ?? "http://localhost:5173";
 
-// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -32,13 +28,13 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod());
 });
 
-// Enregistrement des services métiers
 builder.Services.AddScoped(sp => new RaceQueries(sp.GetRequiredService<AppDbContext>()));
 builder.Services.AddScoped<RaceService>();
 builder.Services.AddScoped(sp => new TrackQueries(sp.GetRequiredService<AppDbContext>()));
 builder.Services.AddScoped<TrackService>();
 
-// Database
+builder.Services.AddScoped(sp => new DriverQueries(sp.GetRequiredService<AppDbContext>()));
+
 var dbUrl = Env.GetString("DATABASE_URL");
 var dbProvider = Env.GetString("DATABASE_PROVIDER")?.ToLower();
 
@@ -62,7 +58,6 @@ else
     throw new Exception($"Unsupported DB provider: {dbProvider}");
 }
 
-// Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -73,10 +68,8 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 
-// Utilisation de CORS
 app.UseCors("AllowFrontend");
 
-// Swagger toujours exposé
 app.UseSwagger();
 app.UseSwaggerUI();
 

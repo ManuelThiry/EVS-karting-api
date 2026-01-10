@@ -10,46 +10,109 @@ namespace API.Controllers;
 public class RaceController : ControllerBase
 {
     private readonly RaceService _service;
-    public RaceController(RaceService service)
+    private readonly Repositories.Queries.DriverQueries _driverQueries;
+    public RaceController(RaceService service, Repositories.Queries.DriverQueries driverQueries)
     {
         _service = service;
+        _driverQueries = driverQueries;
     }
 
+
     [HttpGet]
-    public async Task<ActionResult<List<RaceModel>>> GetAll() => await _service.GetAllAsync();
+    public async Task<ActionResult<List<object>>> GetAll()
+    {
+        var races = await _service.GetAllAsync();
+        return Ok(await EnrichRacesWithTeams(races));
+    }
+
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<RaceModel?>> GetById(int id)
+    public async Task<ActionResult<object>> GetById(int id)
     {
         var race = await _service.GetByIdAsync(id);
         if (race == null) return NotFound();
-        return race;
+        return Ok(await EnrichRaceWithTeams(race));
     }
+
 
 
     [HttpPost]
-    public async Task<ActionResult<RaceModel>> Create([FromBody] RaceDto raceDto)
+    public async Task<ActionResult> Create([FromBody] System.Text.Json.JsonElement body)
     {
-        var race = new RaceModel
+        var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        if (body.ValueKind == System.Text.Json.JsonValueKind.Array)
         {
-            Date = raceDto.Date,
-            Period = raceDto.Period,
-            Price = raceDto.Price,
-            Contact = raceDto.Contact,
-            RaceFormat = raceDto.RaceFormat,
-            Drivers = raceDto.Drivers,
-            Results = raceDto.Results,
-            TrackId = raceDto.TrackId
-        };
-        var created = await _service.CreateAsync(race);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var raceDtos = System.Text.Json.JsonSerializer.Deserialize<List<RaceDto>>(body.GetRawText(), options);
+            if (raceDtos == null || raceDtos.Count == 0) return BadRequest();
+            var created = new List<RaceModel>();
+            foreach (var raceDto in raceDtos)
+            {
+                var driverNames = raceDto.Drivers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var foundDrivers = await _driverQueries.GetByNamesAsync(driverNames);
+                if (foundDrivers.Count != driverNames.Length)
+                {
+                    var notFound = driverNames.Except(foundDrivers.Select(d => d.Name)).ToList();
+                    return BadRequest($"Drivers not found: {string.Join(", ", notFound)}");
+                }
+                var race = new RaceModel
+                {
+                    Date = raceDto.Date,
+                    Period = raceDto.Period,
+                    Price = raceDto.Price,
+                    Contact = raceDto.Contact,
+                    RaceFormat = raceDto.RaceFormat,
+                    Drivers = raceDto.Drivers,
+                    Results = raceDto.Results,
+                    TrackId = raceDto.TrackId
+                };
+                created.Add(await _service.CreateAsync(race));
+            }
+            return Ok(created);
+        }
+        else if (body.ValueKind == System.Text.Json.JsonValueKind.Object)
+        {
+            var raceDto = System.Text.Json.JsonSerializer.Deserialize<RaceDto>(body.GetRawText(), options);
+            if (raceDto == null) return BadRequest();
+            var driverNames = raceDto.Drivers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var foundDrivers = await _driverQueries.GetByNamesAsync(driverNames);
+            if (foundDrivers.Count != driverNames.Length)
+            {
+                var notFound = driverNames.Except(foundDrivers.Select(d => d.Name)).ToList();
+                return BadRequest($"Drivers not found: {string.Join(", ", notFound)}");
+            }
+            var race = new RaceModel
+            {
+                Date = raceDto.Date,
+                Period = raceDto.Period,
+                Price = raceDto.Price,
+                Contact = raceDto.Contact,
+                RaceFormat = raceDto.RaceFormat,
+                Drivers = raceDto.Drivers,
+                Results = raceDto.Results,
+                TrackId = raceDto.TrackId
+            };
+            var created = await _service.CreateAsync(race);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+        else
+        {
+            return BadRequest();
+        }
     }
+
 
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] RaceDto raceDto)
     {
         if (id != raceDto.Id) return BadRequest();
+        var driverNames = raceDto.Drivers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var foundDrivers = await _driverQueries.GetByNamesAsync(driverNames);
+        if (foundDrivers.Count != driverNames.Length)
+        {
+            var notFound = driverNames.Except(foundDrivers.Select(d => d.Name)).ToList();
+            return BadRequest($"Drivers not found: {string.Join(", ", notFound)}");
+        }
         var race = new RaceModel
         {
             Id = raceDto.Id,
@@ -67,9 +130,17 @@ public class RaceController : ControllerBase
         return NoContent();
     }
 
+
     [HttpPatch("{id}/drivers")]
     public async Task<IActionResult> UpdateDrivers(int id, [FromBody] string drivers)
     {
+        var driverNames = drivers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var foundDrivers = await _driverQueries.GetByNamesAsync(driverNames);
+        if (foundDrivers.Count != driverNames.Length)
+        {
+            var notFound = driverNames.Except(foundDrivers.Select(d => d.Name)).ToList();
+            return BadRequest($"Drivers not found: {string.Join(", ", notFound)}");
+        }
         var race = await _service.GetByIdAsync(id);
         if (race == null) return NotFound();
         race.Drivers = drivers;
@@ -78,15 +149,74 @@ public class RaceController : ControllerBase
         return NoContent();
     }
 
+
     [HttpPatch("{id}/results")]
     public async Task<IActionResult> UpdateResults(int id, [FromBody] ResultsDto results)
     {
+        var allNames = results.Qualif.Select(q => q.Name).Concat(results.Race.Select(r => r.Name)).Distinct().ToArray();
+        var foundDrivers = await _driverQueries.GetByNamesAsync(allNames);
+        if (foundDrivers.Count != allNames.Length)
+        {
+            var notFound = allNames.Except(foundDrivers.Select(d => d.Name)).ToList();
+            return BadRequest($"Drivers not found: {string.Join(", ", notFound)}");
+        }
         var race = await _service.GetByIdAsync(id);
         if (race == null) return NotFound();
         race.Results = System.Text.Json.JsonSerializer.Serialize(results);
         var updated = await _service.UpdateAsync(race);
         if (!updated) return NotFound();
         return NoContent();
+    }
+
+    private async Task<object> EnrichRaceWithTeams(RaceModel race)
+    {
+        var drivers = race.Drivers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var driverEntities = await _driverQueries.GetByNamesAsync(drivers);
+        var driversWithTeams = driverEntities.Select(d => new { d.Name, d.Team }).ToList();
+
+        ResultsDto? results = null;
+        if (!string.IsNullOrWhiteSpace(race.Results))
+        {
+            try
+            {
+                results = System.Text.Json.JsonSerializer.Deserialize<ResultsDto>(race.Results);
+            }
+            catch { }
+        }
+        if (results != null)
+        {
+            var allNames = results.Qualif.Select(q => q.Name).Concat(results.Race.Select(r => r.Name)).Distinct().ToArray();
+            var resultDrivers = await _driverQueries.GetByNamesAsync(allNames);
+            var nameToTeam = resultDrivers.ToDictionary(d => d.Name, d => d.Team);
+            foreach (var q in results.Qualif)
+                if (nameToTeam.TryGetValue(q.Name, out var team)) q.Time += $" (Team: {team})";
+            foreach (var r in results.Race)
+                if (nameToTeam.TryGetValue(r.Name, out var team)) r.Gap += $" (Team: {team})";
+        }
+
+        return new
+        {
+            race.Id,
+            race.Date,
+            race.Period,
+            race.Contact,
+            race.RaceFormat,
+            race.Price,
+            Drivers = driversWithTeams,
+            Results = results,
+            race.TrackId,
+            race.Track
+        };
+    }
+
+    private async Task<List<object>> EnrichRacesWithTeams(List<RaceModel> races)
+    {
+        var result = new List<object>();
+        foreach (var race in races)
+        {
+            result.Add(await EnrichRaceWithTeams(race));
+        }
+        return result;
     }
 
     [HttpDelete("{id}")]

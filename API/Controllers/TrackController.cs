@@ -26,10 +26,29 @@ public class TrackController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<TrackModel>> Create(TrackModel track)
+    public async Task<ActionResult> Create([FromBody] System.Text.Json.JsonElement body)
     {
-        var created = await _service.CreateAsync(track);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        if (body.ValueKind == System.Text.Json.JsonValueKind.Array)
+        {
+            var tracks = System.Text.Json.JsonSerializer.Deserialize<List<TrackModel>>(body.GetRawText(), options);
+            if (tracks == null || tracks.Count == 0) return BadRequest();
+            var created = new List<TrackModel>();
+            foreach (var track in tracks)
+                created.Add(await _service.CreateAsync(track));
+            return Ok(created);
+        }
+        else if (body.ValueKind == System.Text.Json.JsonValueKind.Object)
+        {
+            var track = System.Text.Json.JsonSerializer.Deserialize<TrackModel>(body.GetRawText(), options);
+            if (track == null) return BadRequest();
+            var created = await _service.CreateAsync(track);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+        else
+        {
+            return BadRequest();
+        }
     }
 
     [HttpPut("{id}")]
