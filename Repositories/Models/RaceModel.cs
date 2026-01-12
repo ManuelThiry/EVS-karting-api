@@ -1,9 +1,14 @@
 
 
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Repositories.Models;
 
 public class RaceModel
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public DateTime? Date { get; set; }
     public string Period { get; set; } = string.Empty;

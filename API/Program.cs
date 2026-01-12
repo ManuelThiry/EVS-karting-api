@@ -1,5 +1,6 @@
 ﻿using Repositories;
 using Repositories.Queries;
+using Repositories.Extensions;
 using Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -67,6 +68,24 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Ensure database is created and migrations are applied
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        dbContext.Database.Migrate();
+        
+        // Reset PostgreSQL sequences after migrations
+        dbContext.ResetPostgreSqlSequences();
+        
+        Console.WriteLine("Database migrations applied and sequences reset successfully.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error during database initialization: {ex.Message}");
+    }
+}
 
 app.UseCors("AllowFrontend");
 
