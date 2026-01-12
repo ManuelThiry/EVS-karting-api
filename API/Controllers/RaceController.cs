@@ -175,6 +175,7 @@ public class RaceController : ControllerBase
         var driversWithTeams = driverEntities.Select(d => new { d.Name, d.Team }).ToList();
 
         ResultsDto? results = null;
+        object? resultsWithTeams = null;
         if (!string.IsNullOrWhiteSpace(race.Results))
         {
             try
@@ -188,10 +189,22 @@ public class RaceController : ControllerBase
             var allNames = results.Qualif.Select(q => q.Name).Concat(results.Race.Select(r => r.Name)).Distinct().ToArray();
             var resultDrivers = await _driverQueries.GetByNamesAsync(allNames);
             var nameToTeam = resultDrivers.ToDictionary(d => d.Name, d => d.Team);
-            foreach (var q in results.Qualif)
-                if (nameToTeam.TryGetValue(q.Name, out var team)) q.Time += $" (Team: {team})";
-            foreach (var r in results.Race)
-                if (nameToTeam.TryGetValue(r.Name, out var team)) r.Gap += $" (Team: {team})";
+            resultsWithTeams = new
+            {
+                Qualif = results.Qualif.Select(q => new {
+                    q.Position,
+                    q.Name,
+                    q.Time,
+                    Team = nameToTeam.TryGetValue(q.Name, out var team) ? team : string.Empty
+                }).ToList(),
+                Race = results.Race.Select(r => new {
+                    r.Position,
+                    r.Name,
+                    r.Gap,
+                    r.BestLap,
+                    Team = nameToTeam.TryGetValue(r.Name, out var team) ? team : string.Empty
+                }).ToList()
+            };
         }
 
         return new
@@ -203,7 +216,7 @@ public class RaceController : ControllerBase
             race.RaceFormat,
             race.Price,
             Drivers = driversWithTeams,
-            Results = results,
+            Results = resultsWithTeams,
             race.TrackId,
             race.Track
         };
@@ -246,6 +259,7 @@ public class RaceController : ControllerBase
         public int Position { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Gap { get; set; } = string.Empty;
+        public string BestLap { get; set; } = string.Empty;
     }
 
     public class RaceDto
