@@ -31,40 +31,15 @@ public class DriverController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] System.Text.Json.JsonElement body)
+    public async Task<ActionResult> Create([FromBody] DriverModel driver)
     {
-        var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        if (body.ValueKind == System.Text.Json.JsonValueKind.Array)
-        {
-            var drivers = System.Text.Json.JsonSerializer.Deserialize<List<DriverModel>>(body.GetRawText(), options);
-            if (drivers == null || drivers.Count == 0) return BadRequest();
-            var existingNames = _context.Drivers.Select(d => d.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var duplicate = drivers.FirstOrDefault(d => existingNames.Contains(d.Name));
-            if (duplicate != null)
-                return Conflict($"Driver with name '{duplicate.Name}' already exists.");
-            var batchNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var d in drivers)
-                if (!batchNames.Add(d.Name))
-                    return Conflict($"Duplicate name '{d.Name}' in the batch.");
-            _context.Drivers.AddRange(drivers);
-            await _context.SaveChangesAsync();
-            return Ok(drivers);
-        }
-        else if (body.ValueKind == System.Text.Json.JsonValueKind.Object)
-        {
-            var driver = System.Text.Json.JsonSerializer.Deserialize<DriverModel>(body.GetRawText(), options);
-            if (driver == null) return BadRequest();
-            var exists = await _context.Drivers.AnyAsync(d => d.Name.ToLower() == driver.Name.ToLower());
-            if (exists)
-                return Conflict($"Driver with name '{driver.Name}' already exists.");
-            _context.Drivers.Add(driver);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = driver.Id }, driver);
-        }
-        else
-        {
-            return BadRequest();
-        }
+        if (driver == null) return BadRequest();
+        var exists = await _context.Drivers.AnyAsync(d => d.Name.ToLower() == driver.Name.ToLower());
+        if (exists)
+            return Conflict($"Driver with name '{driver.Name}' already exists.");
+        _context.Drivers.Add(driver);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = driver.Id }, driver);
     }
 
     [HttpPut("{id}")]

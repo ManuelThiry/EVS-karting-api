@@ -37,67 +37,29 @@ public class RaceController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] System.Text.Json.JsonElement body)
+    public async Task<ActionResult> Create([FromBody] RaceDto raceDto)
     {
-        var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        if (body.ValueKind == System.Text.Json.JsonValueKind.Array)
+        if (raceDto == null) return BadRequest();
+        var driverNames = raceDto.Drivers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var foundDrivers = await _driverQueries.GetByNamesAsync(driverNames);
+        if (foundDrivers.Count != driverNames.Length)
         {
-            var raceDtos = System.Text.Json.JsonSerializer.Deserialize<List<RaceDto>>(body.GetRawText(), options);
-            if (raceDtos == null || raceDtos.Count == 0) return BadRequest();
-            var created = new List<RaceModel>();
-            foreach (var raceDto in raceDtos)
-            {
-                var driverNames = raceDto.Drivers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                var foundDrivers = await _driverQueries.GetByNamesAsync(driverNames);
-                if (foundDrivers.Count != driverNames.Length)
-                {
-                    var notFound = driverNames.Except(foundDrivers.Select(d => d.Name)).ToList();
-                    return BadRequest($"Drivers not found: {string.Join(", ", notFound)}");
-                }
-                var race = new RaceModel
-                {
-                    Date = raceDto.Date,
-                    Period = raceDto.Period,
-                    Price = raceDto.Price,
-                    Contact = raceDto.Contact,
-                    RaceFormat = raceDto.RaceFormat,
-                    Drivers = raceDto.Drivers,
-                    Results = raceDto.Results,
-                    TrackId = raceDto.TrackId
-                };
-                created.Add(await _service.CreateAsync(race));
-            }
-            return Ok(created);
+            var notFound = driverNames.Except(foundDrivers.Select(d => d.Name)).ToList();
+            return BadRequest($"Drivers not found: {string.Join(", ", notFound)}");
         }
-        else if (body.ValueKind == System.Text.Json.JsonValueKind.Object)
+        var race = new RaceModel
         {
-            var raceDto = System.Text.Json.JsonSerializer.Deserialize<RaceDto>(body.GetRawText(), options);
-            if (raceDto == null) return BadRequest();
-            var driverNames = raceDto.Drivers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            var foundDrivers = await _driverQueries.GetByNamesAsync(driverNames);
-            if (foundDrivers.Count != driverNames.Length)
-            {
-                var notFound = driverNames.Except(foundDrivers.Select(d => d.Name)).ToList();
-                return BadRequest($"Drivers not found: {string.Join(", ", notFound)}");
-            }
-            var race = new RaceModel
-            {
-                Date = raceDto.Date,
-                Period = raceDto.Period,
-                Price = raceDto.Price,
-                Contact = raceDto.Contact,
-                RaceFormat = raceDto.RaceFormat,
-                Drivers = raceDto.Drivers,
-                Results = raceDto.Results,
-                TrackId = raceDto.TrackId
-            };
-            var created = await _service.CreateAsync(race);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-        }
-        else
-        {
-            return BadRequest();
-        }
+            Date = raceDto.Date,
+            Period = raceDto.Period,
+            Price = raceDto.Price,
+            Contact = raceDto.Contact,
+            RaceFormat = raceDto.RaceFormat,
+            Drivers = raceDto.Drivers,
+            Results = raceDto.Results,
+            TrackId = raceDto.TrackId
+        };
+        var created = await _service.CreateAsync(race);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
 
