@@ -51,26 +51,27 @@ public class AppDbContext : DbContext
             new DriverModel { Id = 10, Name = "Loic PETERS", Team = string.Empty },
             new DriverModel { Id = 11, Name = "Florian GIARUSSO", Team = string.Empty },
             new DriverModel { Id = 12, Name = "Mathieu WYZEN", Team = "Enrich" },
-            new DriverModel { Id = 13, Name = "Raphael MONTESANTI", Team = string.Empty },
+            new DriverModel { Id = 13, Name = "Nicolas VINCENT", Team = string.Empty },
             new DriverModel { Id = 14, Name = "Quentin VAN EYLEN", Team = "PGT" },
             new DriverModel { Id = 15, Name = "Cyril HARDY", Team = string.Empty },
             new DriverModel { Id = 16, Name = "Nicolas PREUD'HOMME", Team = string.Empty },
             new DriverModel { Id = 17, Name = "Arnaud SCHAAL", Team = "A7 Core" },
             new DriverModel { Id = 18, Name = "Xavier MAWET", Team = string.Empty },
             new DriverModel { Id = 19, Name = "Michael HUTSEMAIKERS", Team = string.Empty },
-            new DriverModel { Id = 20, Name = "Gauthier VERHEUGE", Team = string.Empty }
+            new DriverModel { Id = 20, Name = "Gauthier VERHEUGE", Team = string.Empty },
+            new DriverModel { Id = 21, Name = "Yannis ATIF", Team = string.Empty }
         );
 
         modelBuilder.Entity<RaceModel>().HasData(
-            new RaceModel {
+           new RaceModel {
                 Id = 1,
                 Date = new DateTime(2026, 1, 15, 20, 0, 0, 585, DateTimeKind.Utc),
                 Period = "January",
                 Contact = "Manuel Thiry (MATH)",
                 RaceFormat = "Q: 6min, R: 30min",
                 Price = 56,
-                Drivers = "",
-                Results = "",
+                Drivers = "Manuel THIRY, Maxime BECKERS, Simon MAUDOUX, Pierre MIGNOLET, Thibaut MARECHAL, Aubry HUYGHEBAERT, Jeremy MAHIAT, Pierre JACOBS, Quentin BOILEAU, Loic PETERS, Florian GIARUSSO, Mathieu WYZEN, Nicolas VINCENT, Quentin VAN EYLEN, Cyril HARDY, Nicolas PREUD'HOMME, Arnaud SCHAAL, Xavier MAWET, Michael HUTSEMAIKERS, Gauthier VERHEUGE, Yannis ATIF",
+                Results = "{\"Qualif\":[{\"Position\":1,\"Name\":\"Manuel THIRY\",\"Time\":\"1:02.995\"},{\"Position\":2,\"Name\":\"Cyril HARDY\",\"Time\":\"1:03.203\"},{\"Position\":3,\"Name\":\"Gauthier VERHEUGE\",\"Time\":\"1:03.496\"},{\"Position\":4,\"Name\":\"Xavier MAWET\",\"Time\":\"1:03.946\"},{\"Position\":5,\"Name\":\"Nicolas PREUD'HOMME\",\"Time\":\"1:05.916\"},{\"Position\":6,\"Name\":\"Simon MAUDOUX\",\"Time\":\"1:06.004\"},{\"Position\":7,\"Name\":\"Thibaut MARECHAL\",\"Time\":\"1:06.570\"},{\"Position\":8,\"Name\":\"Loic PETERS\",\"Time\":\"1:06.631\"},{\"Position\":9,\"Name\":\"Quentin BOILEAU\",\"Time\":\"1:07.040\"},{\"Position\":10,\"Name\":\"Michael HUTSEMAIKERS\",\"Time\":\"1:07.154\"},{\"Position\":11,\"Name\":\"Pierre MIGNOLET\",\"Time\":\"1:07.370\"},{\"Position\":12,\"Name\":\"Jeremy MAHIAT\",\"Time\":\"1:07.656\"},{\"Position\":13,\"Name\":\"Pierre JACOBS\",\"Time\":\"1:08.575\"},{\"Position\":14,\"Name\":\"Yannis ATIF\",\"Time\":\"1:08.682\"},{\"Position\":15,\"Name\":\"Nicolas VINCENT\",\"Time\":\"1:08.984\"},{\"Position\":16,\"Name\":\"Florian GIARUSSO\",\"Time\":\"1:09.441\"},{\"Position\":17,\"Name\":\"Quentin VAN EYLEN\",\"Time\":\"1:09.472\"},{\"Position\":18,\"Name\":\"Maxime BECKERS\",\"Time\":\"1:10.494\"},{\"Position\":19,\"Name\":\"Aubry HUYGHEBAERT\",\"Time\":\"1:11.636\"},{\"Position\":20,\"Name\":\"Arnaud SCHAAL\",\"Time\":\"1:11.673\"},{\"Position\":21,\"Name\":\"Mathieu WYZEN\",\"Time\":\"1:21.777\"}],\"Race\":[{\"Position\":1,\"Name\":\"Cyril HARDY\",\"Gap\":\"\",\"BestLap\":\"1:01.648\"},{\"Position\":2,\"Name\":\"Manuel THIRY\",\"Gap\":\"1.748\",\"BestLap\":\"1:01.830\"},{\"Position\":3,\"Name\":\"Gauthier VERHEUGE\",\"Gap\":\"10.003\",\"BestLap\":\"1:02.157\"},{\"Position\":4,\"Name\":\"Xavier MAWET\",\"Gap\":\"10.716\",\"BestLap\":\"1:02.016\"},{\"Position\":5,\"Name\":\"Nicolas PREUD'HOMME\",\"Gap\":\"1 Laps\",\"BestLap\":\"1:03.929\"},{\"Position\":6,\"Name\":\"Simon MAUDOUX\",\"Gap\":\"1 Laps\",\"BestLap\":\"1:04.162\"},{\"Position\":7,\"Name\":\"Michael HUTSEMAIKERS\",\"Gap\":\"1 Laps\",\"BestLap\":\"1:04.187\"},{\"Position\":8,\"Name\":\"Quentin BOILEAU\",\"Gap\":\"1 Laps\",\"BestLap\":\"1:04.147\"},{\"Position\":9,\"Name\":\"Pierre MIGNOLET\",\"Gap\":\"1 Laps\",\"BestLap\":\"1:05.113\"},{\"Position\":10,\"Name\":\"Loic PETERS\",\"Gap\":\"1 Laps\",\"BestLap\":\"1:04.908\"},{\"Position\":11,\"Name\":\"Pierre JACOBS\",\"Gap\":\"2 Laps\",\"BestLap\":\"1:05.418\"},{\"Position\":12,\"Name\":\"Aubry HUYGHEBAERT\",\"Gap\":\"2 Laps\",\"BestLap\":\"1:06.152\"},{\"Position\":13,\"Name\":\"Thibaut MARECHAL\",\"Gap\":\"2 Laps\",\"BestLap\":\"1:06.008\"},{\"Position\":14,\"Name\":\"Maxime BECKERS\",\"Gap\":\"2 Laps\",\"BestLap\":\"1:05.491\"},{\"Position\":15,\"Name\":\"Quentin VAN EYLEN\",\"Gap\":\"2 Laps\",\"BestLap\":\"1:05.536\"},{\"Position\":16,\"Name\":\"Yannis ATIF\",\"Gap\":\"2 Laps\",\"BestLap\":\"1:07.123\"},{\"Position\":17,\"Name\":\"Jeremy MAHIAT\",\"Gap\":\"2 Laps\",\"BestLap\":\"1:07.223\"},{\"Position\":18,\"Name\":\"Nicolas VINCENT\",\"Gap\":\"3 Laps\",\"BestLap\":\"1:07.626\"},{\"Position\":19,\"Name\":\"Florian GIARUSSO\",\"Gap\":\"3 Laps\",\"BestLap\":\"1:08.280\"},{\"Position\":20,\"Name\":\"Arnaud SCHAAL\",\"Gap\":\"3 Laps\",\"BestLap\":\"1:08.626\"},{\"Position\":21,\"Name\":\"Mathieu WYZEN\",\"Gap\":\"4 Laps\",\"BestLap\":\"1:13.238\"}]} ",
                 TrackId = 1
             },
             new RaceModel {
