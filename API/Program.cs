@@ -19,14 +19,17 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     EnvironmentName = environment
 });
 
-var allowedOrigin = Env.GetString("ALLOWED_ORIGIN") ?? "http://localhost:5173";
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
-        policy => policy.WithOrigins(allowedOrigin)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+        policy => policy
+            .SetIsOriginAllowed(origin =>
+            {
+                var host = new Uri(origin).Host;
+                return host == "localhost" || host == "evs-karting-api";
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod());
 });
 
 builder.Services.AddScoped(sp => new RaceQueries(sp.GetRequiredService<AppDbContext>()));
@@ -75,11 +78,11 @@ using (var scope = app.Services.CreateScope())
     try
     {
         dbContext.Database.Migrate();
-        
         // Reset PostgreSQL sequences after migrations
         dbContext.ResetPostgreSqlSequences();
-        
-        Console.WriteLine("Database migrations applied and sequences reset successfully.");
+        // Seed data
+        SeedData.Initialize(scope.ServiceProvider);
+        Console.WriteLine("Database migrations applied, sequences reset, and data seeded successfully.");
     }
     catch (Exception ex)
     {
