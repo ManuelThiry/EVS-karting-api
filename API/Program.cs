@@ -5,8 +5,6 @@ using Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using DotNetEnv;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-
 
 Env.Load();
 
@@ -25,8 +23,9 @@ builder.Services.AddCors(options =>
         policy => policy
             .SetIsOriginAllowed(origin =>
             {
-                var host = new Uri(origin).Host;
-                return host == "localhost" || host == "evs-karting-api";
+                return origin == Env.GetString("FRONTEND_URL")
+                    || origin == "http://localhost:5172"
+                    || new Uri(origin).Host == "localhost";
             })
             .AllowAnyHeader()
             .AllowAnyMethod());
@@ -57,6 +56,11 @@ else if (dbProvider == "postgresql" || dbProvider == "postgres")
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(dbUrl));
 }
+else if (dbProvider == "sqlserver")
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlServer(dbUrl));
+}
 else
 {
     throw new Exception($"Unsupported DB provider: {dbProvider}");
@@ -70,25 +74,6 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-
-// Ensure database is created and migrations are applied
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
-    {
-        dbContext.Database.Migrate();
-        // Reset PostgreSQL sequences after migrations
-        dbContext.ResetPostgreSqlSequences();
-        // Seed data
-        SeedData.Initialize(scope.ServiceProvider);
-        Console.WriteLine("Database migrations applied, sequences reset, and data seeded successfully.");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error during database initialization: {ex.Message}");
-    }
-}
 
 app.UseCors("AllowFrontend");
 
